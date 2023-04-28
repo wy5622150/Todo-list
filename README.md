@@ -22,47 +22,11 @@ technologies, languages and concepts.
 - JavaScript (ES6)
 - [REST](http://www.restapitutorial.com/lessons/whatisrest.html)
 
-Lastly, you'll need to install the LoopBack 4 CLI toolkit:
-
-```sh
-npm i -g @loopback/cli
-```
-
-## Tutorial
-
-To follow this tutorial, begin with the
-[Create your app scaffolding](http://loopback.io/doc/en/lb4/todo-tutorial-scaffolding.html)
-section.
-
-### Steps
-
-1.  [Create your app scaffolding](http://loopback.io/doc/en/lb4/todo-tutorial-scaffolding.html)
-2.  [Add your Todo model](http://loopback.io/doc/en/lb4/todo-tutorial-model.html)
-3.  [Add a datasource](http://loopback.io/doc/en/lb4/todo-tutorial-datasource.html)
-4.  [Add a repository](http://loopback.io/doc/en/lb4/todo-tutorial-repository.html)
-5.  [Add a controller](http://loopback.io/doc/en/lb4/todo-tutorial-controller.html)
-6.  [Putting it all together](http://loopback.io/doc/en/lb4/todo-tutorial-putting-it-together.html)
-7.  Bonus:
-    [Integrate with a geo-coding service](http://loopback.io/doc/en/lb4/todo-tutorial-geocoding-service.html)
-
 ## Try it out
 
 If you'd like to see the final results of this tutorial as an example
 application, follow these steps:
 
-1.  Run the `lb4 example` command to select and clone the todo repository:
-
-    ```sh
-    lb4 example todo
-    ```
-
-2.  Switch to the directory.
-
-    ```sh
-    cd loopback4-example-todo
-    ```
-
-3.  Finally, start the application!
 
     ```sh
     $ npm start
