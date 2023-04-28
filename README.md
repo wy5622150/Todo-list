@@ -28,11 +28,12 @@ If you'd like to see the final results of this tutorial as an example
 application, follow these steps:
 
 
-    ```sh
+    $ npm i
+    $ npm run build
     $ npm start
 
     Server is running at http://127.0.0.1:3000
-    ```
+
 
 Feel free to look around in the application's code to get a feel for how it
 works. If you're interested in learning how to build it step-by-step, then
