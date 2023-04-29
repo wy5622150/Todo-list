@@ -34,36 +34,10 @@ application, follow these steps:
 
     Server is running at http://127.0.0.1:3000
 
-
-Feel free to look around in the application's code to get a feel for how it
-works. If you're interested in learning how to build it step-by-step, then
-continue with this tutorial!
-
-### Need help?
-
-Check out our
-[Slack](https://join.slack.com/t/loopbackio/shared_invite/zt-8lbow73r-SKAKz61Vdao~_rGf91pcsw)
-and ask for help with this tutorial.
-
-### Bugs/Feedback
-
-Open an issue in [loopback-next](https://github.com/loopbackio/loopback-next)
-and we'll take a look.
-
-## Contributions
-
-- [Guidelines](https://github.com/loopbackio/loopback-next/blob/master/docs/CONTRIBUTING.md)
-- [Join the team](https://github.com/loopbackio/loopback-next/issues/110)
-
 ## Tests
 
 Run `npm test` from the root folder.
 
-## Contributors
-
-See
-[all contributors](https://github.com/loopbackio/loopback-next/graphs/contributors).
-
-## License
-
-MIT
+1. 为这个备忘录中的每条备忘内容（entry）增加一个字段‘type’用来标注这一条内容的类型（如：A,B,C, 这个字段类型为字符串）
+2. 添加一个endpoint，可以返回当前记录所有类型条目的数量（A类型多少个，B类型多少个，要求显示所有的）
+3. 每次添加条目时返回2.要求类似的结果，但是返回值需要是加算上新添条目后的结果
