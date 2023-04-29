@@ -1,3 +1,7 @@
+1. 为这个备忘录中的每条备忘内容（entry）增加一个字段‘type’用来标注这一条内容的类型（如：A,B,C, 这个字段类型为字符串）
+2. 添加一个endpoint，可以返回当前记录所有类型条目的数量（A类型多少个，B类型多少个，要求显示所有的）
+3. 每次添加条目时返回2.要求类似的结果，但是返回值需要是加算上新添条目后的结果
+
 # @loopback/example-todo
 
 This is the basic tutorial for getting started with Loopback 4!
@@ -38,6 +42,3 @@ application, follow these steps:
 
 Run `npm test` from the root folder.
 
-1. 为这个备忘录中的每条备忘内容（entry）增加一个字段‘type’用来标注这一条内容的类型（如：A,B,C, 这个字段类型为字符串）
-2. 添加一个endpoint，可以返回当前记录所有类型条目的数量（A类型多少个，B类型多少个，要求显示所有的）
-3. 每次添加条目时返回2.要求类似的结果，但是返回值需要是加算上新添条目后的结果
