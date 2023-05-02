@@ -34,6 +34,95 @@ export class TodoController {
     @inject('services.Geocoder') protected geoService: Geocoder,
   ) {}
 
+  @get('/todos/count', {
+    responses: {
+      '200': {
+        description: 'Sum of different types of values',
+        content: {'application/json': {schema: {type: 'number'}}},
+      },
+    },
+  })
+  async sum(): Promise<any> {
+    const res = {
+      'Ambition':0,
+      'Brilliance':0,
+      'Computer':0,
+      sum:0
+    }
+    const todos = await this.todoRepository.find();
+    todos.forEach(item => {
+      switch(item.type){
+        case 'Ambition':
+          res.Ambition++;
+          break;
+        case 'Brilliance':
+          res.Brilliance++;
+          break;
+        case 'Computer':
+          res.Computer++;
+          break;
+      }
+    });
+      res.sum = res.Ambition + res.Brilliance + res.Computer;
+    return res;
+  }
+// Add a new endpoint to create a todo item
+@post('/todos/add', {
+  responses: {
+    '200': {
+      description: 'Todo model instance',
+      content: {'application/json': {schema: getModelSchemaRef(Todo)}},
+    },
+  },
+})
+async addTodo(
+  @requestBody({
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            title: {type: 'string'},
+            desc: {type: 'string'},
+            isComplete: {type: 'boolean'},
+            type: {
+              type: 'string',
+              enum: ['Ambition', 'Brilliance', 'Computer'],
+            },
+          },
+          required: ['title', 'desc', 'isComplete', 'type'],
+        },
+      },
+    },
+  })
+  todo: Todo,
+): Promise<any> {
+  const res = {
+    'Ambition':0,
+    'Brilliance':0,
+    'Computer':0,
+    sum:0
+  }
+  const newTodo = await this.todoRepository.create(todo);
+  const todos = await this.todoRepository.find();
+  todos.forEach(item => {
+    switch(item.type){
+      case 'Ambition':
+        res.Ambition++;
+        break;
+      case 'Brilliance':
+        res.Brilliance++;
+        break;
+      case 'Computer':
+        res.Computer++;
+        break;
+    }
+  });
+  res.sum = res.Ambition + res.Brilliance + res.Computer;
+  return res;
+}
+
+
   @post('/todos', {
     responses: {
       '200': {
@@ -112,7 +201,7 @@ export class TodoController {
   async find(@param.filter(Todo) filter?: Filter<Todo>): Promise<Todo[]> {
     return this.todoRepository.find(filter);
   }
-
+  
   @put('/todos/{id}', {
     responses: {
       '204': {
@@ -159,7 +248,7 @@ export class TodoController {
     await this.todoRepository.deleteById(id);
   }
 
-  @get('/todos/count', {
+  @get('/todos/sum', {
     responses: {
       '200': {
         description: 'Todo model count',
