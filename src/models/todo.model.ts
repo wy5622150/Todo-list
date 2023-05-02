@@ -5,12 +5,14 @@
 
 import {Entity, model, property} from '@loopback/repository';
 
-@model()
+@model({settings: {
+  strict: true,
+}})
 export class Todo extends Entity {
   @property({
     type: 'number',
     id: true,
-    generated: false,
+    generated: true,
   })
   id?: number;
 
@@ -19,6 +21,12 @@ export class Todo extends Entity {
     required: true,
   })
   title: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  type: string; //类型
 
   @property({
     type: 'string',

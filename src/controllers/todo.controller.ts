@@ -11,6 +11,7 @@ import {
   FilterExcludingWhere,
   repository,
   Where,
+  
 } from '@loopback/repository';
 import {
   del,
@@ -22,10 +23,12 @@ import {
   post,
   put,
   requestBody,
+  
 } from '@loopback/rest';
 import {Todo} from '../models';
 import {TodoRepository} from '../repositories';
 import {Geocoder} from '../services';
+ 
 
 export class TodoController {
   constructor(
@@ -33,11 +36,11 @@ export class TodoController {
     public todoRepository: TodoRepository,
     @inject('services.Geocoder') protected geoService: Geocoder,
   ) {}
-
+   //新增记录 todos 
   @post('/todos', {
     responses: {
       '200': {
-        description: 'Todo model instance',
+        description: '新增todos',
         content: {'application/json': {schema: getModelSchemaRef(Todo)}},
       },
     },
@@ -55,30 +58,33 @@ export class TodoController {
     })
     todo: Omit<Todo, 'id'>,
   ): Promise<Todo> {
-    if (todo.remindAtAddress) {
-      const geo = await this.geoService.geocode(todo.remindAtAddress);
+ 
+    // if (todo.remindAtAddress) {
 
-      // ignoring because if the service is down, the following section will
-      // not be covered
-      /* istanbul ignore next */
-      if (!geo[0]) {
-        // address not found
-        throw new HttpErrors.BadRequest(
-          `Address not found: ${todo.remindAtAddress}`,
-        );
-      }
-      // Encode the coordinates as "lat,lng" (Google Maps API format). See also
-      // https://stackoverflow.com/q/7309121/69868
-      // https://gis.stackexchange.com/q/7379
-      todo.remindAtGeo = `${geo[0].y},${geo[0].x}`;
-    }
+    //   const geo = await this.geoService.geocode(todo.remindAtAddress);
+
+    //   // ignoring because if the service is down, the following section will
+    //   // not be covered
+    //   /* istanbul ignore next */
+    //   if (!geo[0]) {
+    //     // address not found
+    //     throw new HttpErrors.BadRequest(
+    //       `Address not found: ${todo.remindAtAddress}`,
+    //     );
+    //   }
+    //   // Encode the coordinates as "lat,lng" (Google Maps API format). See also
+    //   // https://stackoverflow.com/q/7309121/69868
+    //   // https://gis.stackexchange.com/q/7379
+    //   todo.remindAtGeo = `${geo[0].y},${geo[0].x}`;
+    // }
+    // console.log(todo)
     return this.todoRepository.create(todo);
   }
-
+ //通过id获取记录 todos 
   @get('/todos/{id}', {
     responses: {
       '200': {
-        description: 'Todo model instance',
+        description: '通过id获取记录 todos ',
         content: {
           'application/json': {
             schema: getModelSchemaRef(Todo, {includeRelations: true}),
@@ -91,9 +97,10 @@ export class TodoController {
     @param.path.number('id') id: number,
     @param.filter(Todo, {exclude: 'where'}) filter?: FilterExcludingWhere<Todo>,
   ): Promise<Todo> {
+    console.log('xxxx')
     return this.todoRepository.findById(id, filter);
   }
-
+// 模糊查询 todos 列表
   @get('/todos', {
     responses: {
       '200': {
@@ -112,7 +119,7 @@ export class TodoController {
   async find(@param.filter(Todo) filter?: Filter<Todo>): Promise<Todo[]> {
     return this.todoRepository.find(filter);
   }
-
+//  更新todos put 请求
   @put('/todos/{id}', {
     responses: {
       '204': {
@@ -126,7 +133,7 @@ export class TodoController {
   ): Promise<void> {
     await this.todoRepository.replaceById(id, todo);
   }
-
+//更新todos patch 请求
   @patch('/todos/{id}', {
     responses: {
       '204': {
@@ -147,7 +154,7 @@ export class TodoController {
   ): Promise<void> {
     await this.todoRepository.updateById(id, todo);
   }
-
+ //删除todos
   @del('/todos/{id}', {
     responses: {
       '204': {
@@ -158,7 +165,7 @@ export class TodoController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.todoRepository.deleteById(id);
   }
-
+//获取 todos 通过模糊查询统计  count 
   @get('/todos/count', {
     responses: {
       '200': {
@@ -167,14 +174,16 @@ export class TodoController {
       },
     },
   })
-  async count(@param.where(Todo) where?: Where<Todo>): Promise<Count> {
+  async count(@param.query.object('type',{title:'',default:{"type":"A"}}) where?: Where<Todo>): Promise<Count> {
+    
     return this.todoRepository.count(where);
   }
 
+ //批量更新
   @patch('/todos', {
     responses: {
       '200': {
-        description: 'Todo PATCH success count',
+        description: '更新全部 并返回更新总数',
         content: {'application/json': {schema: CountSchema}},
       },
     },
@@ -190,6 +199,26 @@ export class TodoController {
     todo: Todo,
     @param.where(Todo) where?: Where<Todo>,
   ): Promise<Count> {
+
+    console.log(where)
     return this.todoRepository.updateAll(todo, where);
   }
+//获取各类型的总数
+  @get('/todos/typecount', {
+    responses: {
+      '200': {
+        description: '获取各类型的总数',
+        content: {'application/json': {schema: CountSchema}},
+      },
+    },
+  })
+ 
+  async typecount(@param.query.string('type') type?: string): Promise<any> {
+     
+    if(type){
+      return this.todoRepository.execute('SELECT type,count(type) as count FROM Todo  where type =? ', [type]);
+    }
+    return this.todoRepository.execute('SELECT type,count(type) as count FROM Todo  group by type ');
+  }
+ 
 }
