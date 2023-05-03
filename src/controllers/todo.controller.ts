@@ -27,6 +27,11 @@ import {Todo} from '../models';
 import {TodoRepository} from '../repositories';
 import {Geocoder} from '../services';
 
+// 各类型TODO分组统计数量
+interface GroupCount {
+  [k: string]: number;
+}
+
 export class TodoController {
   constructor(
     @repository(TodoRepository)
@@ -54,7 +59,7 @@ export class TodoController {
       },
     })
     todo: Omit<Todo, 'id'>,
-  ): Promise<Todo> {
+  ): Promise<{ todo: Todo, groupCount: GroupCount }> {
     if (todo.remindAtAddress) {
       const geo = await this.geoService.geocode(todo.remindAtAddress);
 
@@ -72,7 +77,12 @@ export class TodoController {
       // https://gis.stackexchange.com/q/7379
       todo.remindAtGeo = `${geo[0].y},${geo[0].x}`;
     }
-    return this.todoRepository.create(todo);
+    const row = await this.todoRepository.create(todo);
+    const groupCount = await this.groupCount();
+    return {
+      todo: row,
+      groupCount
+    }
   }
 
   @get('/todos/{id}', {
@@ -191,5 +201,29 @@ export class TodoController {
     @param.where(Todo) where?: Where<Todo>,
   ): Promise<Count> {
     return this.todoRepository.updateAll(todo, where);
+  }
+
+  /**
+   * 根据TODO类型分组统计数量
+   * @returns 
+   */
+  @get('/todos/group-count', {
+    responses: {
+      '200': {
+        description: "Todo group count by type",
+        content: {'application/json': {schema: {} as GroupCount}}
+      }
+    }
+  })
+  async groupCount(): Promise<GroupCount> {
+    const result: GroupCount = {};
+    const rows = await this.todoRepository.find();
+    rows.forEach(({ type }) => {
+      if (!result.hasOwnProperty(type)) {
+        result[type] = 0;
+      }
+      ++result[type];
+    })
+    return result;
   }
 }

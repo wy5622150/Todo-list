@@ -47,6 +47,11 @@ export class Todo extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tag?: any;
 
+  @property({
+    type: 'string'
+  })
+  type: string;
+
   constructor(data?: Partial<Todo>) {
     super(data);
   }
