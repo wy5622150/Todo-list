@@ -4,6 +4,7 @@
 4. 你有一个星期的时间完成以上任务。
 6. 可以对这个项目进行任何你认为可以展现你技能的修改，但是额外内容请基于一个新branch并指向1.2.3.的branch以便区分。
 7. 修改完成后请添加一个（或多个）pull request
+8. 本应用在linux ubuntu & macOS系统下经过测试可以正常运行，windows系统不确定
 
 # @loopback/example-todo
 
