@@ -3,7 +3,7 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {Entity, model, property} from '@loopback/repository';
+import { Entity, model, property } from '@loopback/repository';
 
 @model()
 export class Todo extends Entity {
@@ -33,13 +33,12 @@ export class Todo extends Entity {
   @property({
     type: 'string',
   })
-  remindAtAddress?: string; // address,city,zipcode
+  remindAtAddress?: string;
 
-  // TODO(bajtos) Use LoopBack's GeoPoint type here
   @property({
     type: 'string',
   })
-  remindAtGeo?: string; // latitude,longitude
+  remindAtGeo?: string;
 
   @property({
     type: 'any',
@@ -47,10 +46,16 @@ export class Todo extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tag?: any;
 
+  @property({
+    type: 'string', // Add a new property for "type"
+  })
+  type: string;
+
   constructor(data?: Partial<Todo>) {
     super(data);
   }
 }
+
 
 export interface TodoRelations {
   // describe navigational properties here
