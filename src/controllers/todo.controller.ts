@@ -27,6 +27,11 @@ import {Todo} from '../models';
 import {TodoRepository} from '../repositories';
 import {Geocoder} from '../services';
 
+// 分组计数接口，用于返回值
+interface BlockCounting {
+  [key: string]: [value: number]
+}
+
 export class TodoController {
   constructor(
     @repository(TodoRepository)
@@ -54,7 +59,8 @@ export class TodoController {
       },
     })
     todo: Omit<Todo, 'id'>,
-  ): Promise<Todo> {
+    // 修改返回值类型
+  ): Promise<any> {
     if (todo.remindAtAddress) {
       const geo = await this.geoService.geocode(todo.remindAtAddress);
 
@@ -72,7 +78,11 @@ export class TodoController {
       // https://gis.stackexchange.com/q/7379
       todo.remindAtGeo = `${geo[0].y},${geo[0].x}`;
     }
-    return this.todoRepository.create(todo);
+    // 每次添加完返回分组后的计数
+    // 该逻辑可以单独封装成函数供调用
+    const item = await this.todoRepository.create(todo);
+    const blockCounting = await this.blockCounting();
+    return { todo: item, blockCounting: blockCounting };
   }
 
   @get('/todos/{id}', {
@@ -167,8 +177,14 @@ export class TodoController {
       },
     },
   })
-  async count(@param.where(Todo) where?: Where<Todo>): Promise<Count> {
-    return this.todoRepository.count(where);
+  // 返回总备忘内容条数
+  async count(@param.where(Todo) where?: Where<Todo>): Promise<any> {
+    const res =  this.todoRepository.find();
+    let sum = 0;
+    (await res).forEach(item => {
+      sum++;
+    })
+    return "count: " + sum;
   }
 
   @patch('/todos', {
@@ -191,5 +207,79 @@ export class TodoController {
     @param.where(Todo) where?: Where<Todo>,
   ): Promise<Count> {
     return this.todoRepository.updateAll(todo, where);
+  }
+
+  // 新建endpoint，返回分组计数和总数
+  @get('/todos/counts', {
+    response: {
+      '200': {
+        description: "Get Block Counting!"
+        content: {
+          'application/json': { schema: {} as BlockCounting }
+        }
+      }
+    }
+  })
+
+  // 具体逻辑 if-else可改switch-case
+  async blockCounting(): Promise<BlockCounting> {
+    const target: BlockCounting = {
+      sum: 0,
+      abstract: 0,
+      basic: 0,
+      specific: 0
+    };
+    const todos = await this.todoRepository.find();
+    todos.forEach((item) => {
+      if ("".match(item.type))
+          ""
+      else if (item.type.match("A"))
+          target.abstract++;
+      else if (item.type.match("B"))
+          target.basic++;
+      else if (item.type.match("C"))
+          target.specific++;
+      else;      
+      target.sum++;
+    })
+    return target;
+  }
+
+  // 新建endpoint，可添加todo项，添加成功返回计数
+  @post('/todos/add', {
+    responses: {
+      '200': {
+        description: 'The interface of todo added!',
+        content: {
+          'application/json': { schema: {} as Todo }
+        }
+      }
+    }
+  })
+  
+  async todoAdded(
+    @requestBody({
+      content: {
+        'application/json': { schema: {
+          type: 'object',
+          properties: {
+            title: {
+              type: 'string'
+            },
+            desc: {
+              type: 'string'
+            },
+            type: {
+              type: 'string',
+              enum: ['abstract', 'basic', 'specific']
+            }
+          }
+        }}
+      }
+    }) todo: Todo
+  ): Promise<any> {
+    const item = await this.todoRepository.create(todo);
+    const blockCounting = await this.blockCounting();
+    return { todo: item, blockCounting: blockCounting };
   }
 }
