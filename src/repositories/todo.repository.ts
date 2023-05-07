@@ -13,6 +13,9 @@ export class TodoRepository extends DefaultCrudRepository<
   typeof Todo.prototype.id,
   TodoRelations
 > {
+  forAll(): any {
+    throw new Error('Method not implemented.');
+  }
   constructor(@inject('datasources.db') dataSource: DbDataSource) {
     super(Todo, dataSource);
   }

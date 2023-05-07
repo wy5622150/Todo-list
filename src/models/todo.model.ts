@@ -22,6 +22,12 @@ export class Todo extends Entity {
 
   @property({
     type: 'string',
+    required: true,
+  })
+  type: string;
+
+  @property({
+    type: 'string',
   })
   desc?: string;
 
